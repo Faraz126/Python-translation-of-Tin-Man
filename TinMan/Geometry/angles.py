@@ -51,36 +51,55 @@ class Angle:
 
     #end region
 
-    #Properties #Need to use decorator here
+    #Properties 
 
-    def degrees(self):
+    def __get_degrees(self):
         return Angle.radians_to_degrees(self.radians)
-
-    def cos(self):
+    
+    def __get_cos(self):
         return math.cos(self.radians)
 
-    def sin(self):
+    def __get_sin(self):
         return math.sin(self.radians)
 
-    def tan(self):
-        return math.sin(self.radians)
-
-    def is_nan(self):
+    def __get_tan(self):
+        return math.tan(self.radians)
+    
+    def __get_is_nan(self):
         return math.isnan(self.radians)
-
-    def abs(self):
+    
+    def __get_abs(self):
         return Angle(abs(self.radians))
+
+
+    degrees = property(__get_degrees)
+    cos = property(__get_cos)
+    sin = property(__get_sin)
+    tan = property(__get_tan)
+    is_nan = property(__get_is_nan)
+    abs = property(__get_abs)
 
     #end properties
 
     def normalise_balanced(self):
         new = self.radians
 
-        while new < math.pi:
+        while new < -math.pi:
             new += math.pi*2
         while new >= math.pi:
             new -= math.pi*2
         return Angle.from_radians(new)
+
+    def limit(self, lowerlimit, upperlimit):
+        if lowerlimit > upperlimit:
+            raise BaseException('The Lower limit must be less than upper limit')
+        if self < lowerlimit:
+            return lowerlimit
+        if self > upperlimit:
+            return upperlimit
+        return self
+
+
 
     #region operators, equality, hashing
 
@@ -126,7 +145,9 @@ class Angle:
     def __ne__(a,b):
         return not a.equals(b)
 
-    #to_string method left
+    def to_string(self):
+        return str(round(self.radians_to_degrees(self.radians),2), 'Degrees')
+
 
 
 
