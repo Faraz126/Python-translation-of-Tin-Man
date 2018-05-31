@@ -115,17 +115,17 @@ class Angle:
     def __add__(a,b):
         return Angle.from_radians((a.radians + b.radians))
 
-    def __mul__(a,b):
-        return Angle.from_radians((a.radians * b.radians))
+    def __mul__(a,scale):
+        return Angle.from_radians((a.radians * scale))
 
     def __sub__(a,b):
         return Angle.from_radians((a.radians - b.radians))
 
 
-    def __truediv__(a,b):
+    def __truediv__(a,quotient):
         if type(b) != Angle:
             return from_radians(a.radians/b) #Code to be added after time class
-        return Angle.from_radians(a.radians/b.radians)
+        return Angle.from_radians(a.radians/quotient)
 
     def __gt__(a,b):
         return a.radians > b.radians
