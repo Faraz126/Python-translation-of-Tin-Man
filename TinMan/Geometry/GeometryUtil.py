@@ -1,3 +1,5 @@
+import angles,AngularSpeed,Polar,TransformationMatrix,Vector3,Vector2
+
 class GeometryUtil:
     def calculate_distance_along_line_that_is_closest_to_point(origin, direction, point):
         v = direction.normalize()
