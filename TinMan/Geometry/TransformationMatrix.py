@@ -1,4 +1,4 @@
-import angles, AngularSpeed, GeometryUtil, Polar
+import angles, AngularSpeed, GeometryUtil, Polar,Vector2,Vector3
 import math
 
 class TransformationMatrix:

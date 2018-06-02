@@ -1,10 +1,11 @@
-import angles, AngularSpeed, GeometryUtil
+import angles, AngularSpeed, GeometryUtil,Vector2,Vector3
 
 class Polar: #Immutable Data type
     def __init__(self,distance,theta,phi):
         '''
-        Theta = Angle in horizontal plane, 0 means point towards opponent goal
-        Phi = Lattidunial angle. 0 = Horizontal, -ve = point downward '''
+        Theta = Angle in horizontal plane, 0 means pointing towards opponent goal
+        Phi = Lattiduninal angle. 0 = Horizontal, -ve = pointing downward '''
+
         if distance < 0:
             raise BaseException("Distance", distance, "must not be negative")
         self.distance = distance
@@ -17,7 +18,7 @@ class Polar: #Immutable Data type
         y = t * self.theta.sin
         z = Distance*self.phi.sin
 
-        return vector3(x,y,z) #need addition
+        return Vector3.Vector3(x,y,z) #need addition
 
     def is_zero(self):
         return self.distance == 0 and self.theta == Angle(0) and self.phi == Angle(0)
