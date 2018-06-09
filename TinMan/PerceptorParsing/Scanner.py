@@ -4,11 +4,12 @@ sys.path.append('../')
 import angles, AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3, io,math
 
 class Token:
-    kind = int()
-    pos = int()
-    col = int()
-    line = int()
-    val = str()
+    def __init__(self):
+        kind = int()
+        pos = int()
+        col = int()
+        line = int()
+        val = str()
     
 class Buffer:
     EOF = sys.maxsize + 1
@@ -114,6 +115,9 @@ class StreamBuffer:
         no_sym = 50
 
         def __init__(self, *args):
+            self.t = Token()
+            self.pt = Token()
+            self.tokens = Token()
             self.start = dict()
             for i in range(48,58):
                 self.start[i] = 2
@@ -122,6 +126,8 @@ class StreamBuffer:
             for i in range(97,122):
                 self.start[i] = 5
             self.start[45], self.start[40], self.start[41],self.start[Buffer.EOF] = 1,53,9,-1
+            self.tval = [None for i in range(128)]
+            self.tlen = int()
             if args:
                 if type(args[0] == str:
                     self.buffer = StringBuffer(s)
@@ -140,6 +146,58 @@ class StreamBuffer:
             self.pt = Token()
             self.tokens = Token()
 
+        def next_ch(self):
+            if self.old_eols >0:
+                self.ch = Scanner.EOL
+                self.old_eols -= 1
+            else:
+                self.pos = self.buffer.pos
+                self.ch = self.buffer.Read()
+                self.col += 1
+                if self.ch == '\r' and self.buffer.Peek() != '\n':
+                    self.ch = Scanner.EOL
+                if self.ch == Scanner.EOL:
+                    self.line+= 1
+                    col = 0
 
+        def add_ch(self):
+            if self.tlen >= len(self.tval):
+                new_buf = [None for i in range(2*len(self.tval))]
+                for i in range(len(self.tval)):
+                    new_buf[i] = self.tval[i]
+                    self.tval = new_buf
+            if self.ch != Buffer.EOF:
+                self.tval[self.tlen] = self.ch
+                self.tlen += 1
+                self.next_ch()
+        
+        def check_literal(self):
+            mapper = {'nan':3,'now':8,'left':12,'right':13,'t':14,'pm':15,'n':17,'rt':18,'a':20,'ax':22, 'ax1':24, 'ax2':25, 'val':27, 'c':29, 'f':30, 'temp':32, 
+            'battery': 33, 'F1L': 35, 'F2L': 36, 'F1R':37, 'F2R':38, 'G1L': 39, 'G2L': 40, 'G1R': 41, 'G2R':42, 'B':43, 'P':44, 'mypos':46, 'L':47, 'self':49}
+            self.t.kind = mapper[self.t.val]
+        
+        def next_token(self):
+            while self.ch == ' ':
+                self.next_ch()
+            self.rec_kind = Scanner.no_sym
+            self.rec_end = self.pos
+            t = Token()
+            t.pos = pos
+            t.col = col
+            t.line = line
+            if not self.start.get(self.ch, int()):
+                state = 0
+            else:
+                state = self.start[self.ch]
+            self.tlen = 0
+            self.add_ch()
+
+            if state == -1:
+                t.kind = Scanner.eof_sym
+            elif state == 0:
+                if rec_kind != Scanner.no_sym:
+                    self.tlen = self.rec_end - t.pos
+                t.kind = self.rec_kind
+                
 
     
