@@ -1,7 +1,8 @@
 import sys
-sys.path.append('../')
 
-import angles, AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3, io,math
+from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
+from PerceptorParsing import switch_case
+import io,math
 
 class Token:
     def __init__(self):
@@ -21,7 +22,7 @@ class StringBuffer:
         self.pos =0
 
     def read(self):
-        if self.pos = len(self.string):
+        if self.pos == len(self.string):
             return Buffer.EOF
         self.pos += 1
         return self.string[self.pos-1]
@@ -31,7 +32,7 @@ class StringBuffer:
 
 class StreamBuffer:
     min_buffer_length = 1024
-    max_buffer_length = StreamBuffer.min_buffer_length * 64
+    max_buffer_length = 1024 * 64
     '''
     buf = []
     buf_start = int()
@@ -49,9 +50,9 @@ class StreamBuffer:
             self.file_len, self.buf_len,self.buf_start = 0,0,0
          
         if self.buf_len > 0:
-            self.buf = list[None for i in self.buf_len]
+            self.buf = [None for i in range(self.buf_len)]
         else:
-            self.buf = list[None for i in StreamBuffer.min_buffer_length]
+            self.buf = [None for i in range(StreamBuffer.min_buffer_length)]
         
         if self.file_len > 0:
             self.pos = 0
@@ -84,6 +85,7 @@ class StreamBuffer:
     def _pos_setter(self,value):
         if value >= self.file_len and not self.stream and not self.stream.seekable():
             while value >= file_len and self.read_next_stream_chunk() > 0:
+                continue
         if value < 0 or value > self.file_len:
             raise BaseException('Buffer out of bounds access, position: ' + value)
         if value >= self.buf_start and value < self.buf_start + self.buf_len:
@@ -129,7 +131,7 @@ class StreamBuffer:
             self.tval = [None for i in range(128)]
             self.tlen = int()
             if args:
-                if type(args[0] == str:
+                if type(args[0]) == str:
                     self.buffer = StringBuffer(s)
                     self.init()
                 else:
@@ -181,23 +183,27 @@ class StreamBuffer:
                 self.next_ch()
             self.rec_kind = Scanner.no_sym
             self.rec_end = self.pos
-            t = Token()
-            t.pos = pos
-            t.col = col
-            t.line = line
+            self.t = Token()
+            self.t.pos = pos
+            self.t.col = col
+            self.t.line = line
             if not self.start.get(self.ch, int()):
                 state = 0
             else:
                 state = self.start[self.ch]
             self.tlen = 0
             self.add_ch()
+            kwargs = {self : self, t : self.t,eof_sym : 0, max_t : 50, no_sym : 50}
+            return switch-case.SwitchCase(state).check()
 
-            if state == -1:
-                t.kind = Scanner.eof_sym
-            elif state == 0:
-                if rec_kind != Scanner.no_sym:
-                    self.tlen = self.rec_end - t.pos
-                t.kind = self.rec_kind
-                
-
+    def set_scanner_behind_t(self):
+        self.buffer.pos = self.t.pos
+        self.next_ch()
+        self.line = self.t.line
+        self.col = self.t.col
+        for i in range(self.tlen):
+            self.next_ch()
     
+    '''
+    Token Methods left
+    '''
