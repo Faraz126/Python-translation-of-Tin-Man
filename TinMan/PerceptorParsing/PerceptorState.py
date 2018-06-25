@@ -137,5 +137,83 @@ class PerceptorState:
         if self.force_states:
             for j in self.force_states:
                 sb += "\nForce State '" + str(j.label) + "' -> pos " + str(j.point_on_body) + ", force " + str(j.force_vector)
+
+        if self.landmark_positions:
+            for j in self.landmark_positions:
+                sb += "\n" + str(j.landmark) + " -> pos " + str(j.polar_position)
         
+        if self.ball_position:
+            sb += "\nBall -> '" + str(self.ball_position) + "'"
+        
+        if self.team_mate_positions:
+            for j in self.team_mate_positions:
+                sb += "\n" + str(j)
+        
+        if self.opposition_positions:
+            for j in self.opposition_positions:
+                sb += "\n" + str(j)
+        
+        if self.heard_messages:
+            for j in self.heard_messages:
+                x = "self" if j.is_from_self else str(j.relative_direction.degrees) 
+                sb += "\nMessage at " + str(j.heard_at_time) + " from " + x + " text '" + str(j.text) +"'" 
+
+        return sb
+
+    
+class PlayerPosition:
+    def __init__(self, is_team_mate, player_id, part_positions):
+        self.is_team_mate = is_team_mate
+        self.player_id = player_id
+        self.part_positions = part_positions
+    
+    def __str__(self):
+        sb = str()
+        x = "Team_mate " if self.is_team_mate else "Opposition "
+        sb += x
+        sb += str(self.player_id)
+        sb += str(self.part_positions)
+
+        first = True
+
+        for p in self.part_positions:
+            if not first:
+                sb += ", "
+            first = False
+            sb += str(p.label) + " @ " + str(p.polar_position)
+        
+        return sb
+
+class BodyPartPosition:
+    def __init__(self, label, position):
+        self.label = label
+        self.polar_position = position
+
+    def __str__(self):
+        return str(self.label) + " " + str(self.polar_position)
+
+class TouchState:
+
+    def __init__(self, label, is_touching):
+        self.label = label
+        self.is_touching = is_touching
+
+    def __str__(self):
+        x = "" if self.is_touching else 'not'
+        return str(self.label) + " " + x
+
+class UnivseralJointState:
+
+    def __init__(self, label, angle1, angle2):
+        self.label = label
+        self.angle1 = angle1
+        self.angle2 = angle2
+
+class VisibleLine:
+
+    def __init__(self, end1, end2):
+        self.end1 = end1
+        self.end2 = end2
+        
+
         

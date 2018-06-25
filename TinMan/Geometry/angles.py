@@ -31,7 +31,7 @@ class Angle:
     def a_tan2(x,y):
         return Angle.from_radians(math.atan2(x,y))
 
-    def __init__(self,radians):
+    def __init__(self,radians = 0):
         self.radians = radians
         
 
@@ -145,8 +145,8 @@ class Angle:
     def __ne__(a,b):
         return not a.equals(b)
 
-    def to_string(self):
-        return str(round(self.radians_to_degrees(self.radians),2), 'Degrees')
+    def __str__(self):
+        return str(round(self.radians_to_degrees(self.radians),2))+ ' Degrees'
 
 
 

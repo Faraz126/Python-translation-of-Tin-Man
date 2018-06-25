@@ -1,9 +1,10 @@
-import angles, AngularSpeed,GeometryUtil,Polar,TransformationMatrix,math,Vector3
+from Geometry import angles, AngularSpeed,GeometryUtil,Polar,TransformationMatrix,Vector3
+import math
 
 class Vector3:
     epsilon = 0.0001
 
-    def __init__(self,x,y,z): #constructor
+    def __init__(self,x=0,y=0,z=0): #constructor
         self.x = x
         self.y = y
         self.z = z
@@ -81,7 +82,7 @@ class Vector3:
 
     #end region
 
-    def to_string(self):
+    def __str__(self):
         return str(round(self.x,2)) +'i ' + str(round(self.y,2))+ 'j ' + str(round(self.z,2))
 
     def equals(self,a):

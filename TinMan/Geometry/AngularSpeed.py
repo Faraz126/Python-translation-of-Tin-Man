@@ -1,4 +1,5 @@
-import math, angles
+import math
+from Geometry import angles
 
 class AngularSpeed:
     epsilon = 0.0001
@@ -87,5 +88,5 @@ class AngularSpeed:
 
     #End Region
 
-    def to_string(self):
+    def __str__(self):
         return str(round(self.degrees_per_second,2)) + ' degrees per second'

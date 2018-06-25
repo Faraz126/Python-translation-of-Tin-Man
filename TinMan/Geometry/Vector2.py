@@ -1,4 +1,5 @@
-import angles, AngularSpeed,GeometryUtil,Polar,TransformationMatrix,math
+from Geometry import angles, AngularSpeed,GeometryUtil,Polar,TransformationMatrix
+import math
 
 class Vector2:
     epsilon = 0.0001
@@ -74,7 +75,7 @@ class Vector2:
 
     #end region
 
-    def to_string(self):
+    def __str__(self):
         return str(round(self.x,2)) +'i ' + str(round(self.y,2))+ 'j'
 
     def equals(self,a):
