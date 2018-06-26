@@ -2,7 +2,7 @@ import sys
 
 from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
 from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
-from RoboViz import Shape
+from RoboViz import Shape,ShapeSet
 
 class RoboVizOptions:
     default_udp_port = 32769
