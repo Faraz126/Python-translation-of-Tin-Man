@@ -381,3 +381,179 @@ class Circle(Shape):
         
         bytes_sent_count = udp_client.send(buf, len(buf))
         assert bytes_sent_count == num_bytes
+
+class Sphere(Shape):
+
+    def __init__(self, center = Vector3.Vector3(), radius_metres = 0.5, color = color.white):
+        self._radius_metres = radius_metres
+        self._center = center
+        self._x = center.x
+        self._y = center.y
+        self._z = center.z
+        self._color = color
+    
+    def _radius_metres_setter(self, value):
+        super(Sphere,Sphere).validate_double(value)
+        self._radius_metres = value
+        self.set_dirty()
+
+    radius_metres = property(self._radius_metres, self._radius_metres_setter)
+
+    def _color_setter(self, value):
+        self._color = value
+        self.set_dirty()
+
+    color = property(self._color, self._color_setter)
+
+    def _center_setter(self, value):
+        self.x = value.x
+        self.y = value.y
+        self.z = value.z
+    
+    center = property(Vector3.Vector3(self.x,self.y,self.z), self._center_setter)
+
+    def _x_setter(self,value):
+        super(Sphere,Sphere).validate_double(value)
+        self._x = value
+        self.set_dirty()
+
+    x = property(self._x, self._x_setter)
+
+    def _y_setter(self,value):
+        super(Sphere,Sphere).validate_double(value)
+        self._y = value
+        self.set_dirty()
+
+    y = property(self._y, self._y_setter)
+
+    def _z_setter(self,value):
+        super(Sphere,Sphere).validate_double(value)
+        self._z = value
+        self.set_dirty()
+
+    z = property(self._z, self._z_setter)
+
+    def translate(self, offset):
+        self.center += offset
+
+    def send_message(self,udp_client):
+        path_bytes = self.shape_set.path_bytes
+        num_bytes = 30 + len(path_bytes)
+        buf = [None for i in range(num_bytes)]
+
+        buf[0] = 1
+        buf[1] = 3
+
+        super(Sphere,Sphere).write_double(buf,2,self.center.x)
+        super(Sphere,Sphere).write_double(buf,8,self.center.y)
+        super(Sphere,Sphere).write_double(buf,14,self.center.z)
+        super(Sphere,Sphere).write_double(buf,20,self.radius_metres)
+        super(Sphere,Sphere).write_color(buf,26,self.color, False)
+
+        for i in range(len(path_bytes)):
+            buf[29+i] = path_bytes[i]
+
+        bytes_sent_count = udp_client.send(buf, len(buf))
+        assert bytes_sent_count == num_bytes
+
+class FieldAnnotation(Shape):
+
+    def __init__(self, position = Vector3.Vector3(), text = '', color = color.white):
+        self._text = text
+        self._text_bytes = None
+        self._color = color
+        self.position = position
+        self._x = position.x
+        self._y = position.y
+        self._z = position.z
+
+    def _color_setter(self, value):
+        if self._color ==value:
+            return
+        else:
+            self._color = value
+            self.set_dirty()
+
+    color = property(self._color, self._color_setter)
+
+    def _position_setter(self, value):
+        self.x = value.x
+        self.y = value.y
+        self.z = value.z
+
+    position = property(Vector3.Vector3(self.x,self.y, self.z), self._position_setter)
+
+    def _x_setter(self,value):
+        super(FieldAnnotation,FieldAnnotation).validate_double(value)
+        self._x = value
+        self.set_dirty()
+
+    x = property(self._x, self._x_setter)
+
+    def _y_setter(self,value):
+        super(FieldAnnotation,FieldAnnotation).validate_double(value)
+        self._y = value
+        self.set_dirty()
+
+    y = property(self._y, self._y_setter)
+
+    def _z_setter(self,value):
+        super(FieldAnnotation,FieldAnnotation).validate_double(value)
+        self._z = value
+        self.set_dirty()
+
+    z = property(self._z, self._z_setter)
+
+    def _text_setter(self, value):
+        if self._text == value:
+            return
+        self._text = value
+        self._text_bytes = None
+        self.set_dirty()
+
+    text = property(self._text, self._text_setter)
+
+    def _text_bytes_getter(self,value):
+        if self._text_bytes != None:
+            return self._text_bytes
+        else:
+            self._text_bytes = bytes(self.text)
+            return self._text_bytes
+    
+    text_bytes = property(self._text_bytes_getter)
+
+    def translate(self, offset):
+        self.position += offset
+
+    def send_message(self, udp_client):
+
+        if len(self.text_bytes) == 0:
+            return
+        path_bytes = self.shape_set.path_bytes
+        num_bytes = 25 + len(path_bytes) + len(self.text_bytes)
+        buf = [None for i in range(num_bytes)]
+
+        buf[0] = 2
+        buf[1] = 0
+
+        super(FieldAnnotation,FieldAnnotation).write_double(buf,2,self.x)
+        super(FieldAnnotation,FieldAnnotation).write_double(buf,8,self.y)
+        super(FieldAnnotation,FieldAnnotation).write_double(buf,14,self.z)
+        super(FieldAnnotation,FieldAnnotation).write_color(buf,20,color, False)
+        for i in range(len(self.text_bytes)):
+            buf[i+23] = self.text_bytes[i]
+        for i in range(len(path_bytes)):
+            buf[24+ len(self.text_bytes)+ i] = path_bytes[i]
+
+        bytes_sent_count = udp_client.send(buf, len(buf))
+        assert bytes_sent_count == num_bytes
+
+        
+
+
+
+
+
+
+
+    
