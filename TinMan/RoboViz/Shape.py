@@ -131,9 +131,114 @@ class Dot(Shape):
             buf[29+i] = path_bytes[i]
         bytes_sent_count = udp_client.send(buf, len(buf))
         assert bytes_sent_count == num_bytes
-    
-    
 
 
+class Line(Shape):
 
+    def __init__(self, end1 = Vector3.Vector3(), end2 = Vector3.Vector3(), pixel_thickness = 1, color = color.white):
+        self._pixel_thickness = pixel_thickness 
+        self._color = color
+        self.end1 = end1
+        self._x1 = end1.x
+        self._y1 = end1.y
+        self._z1 = end1.z 
+        self.end2 = end2
+        self._x2 = end2.x
+        self._y2 = end2.y
+        self._z3 = end2.z
+        super().__init()
 
+    def _end1_setter(self,value):
+        self.x1 =  value.x
+        self.y1 = value.y
+        self.z1 = value.z
+
+    end1 = property(Vector3.Vector3(self._x,self._y,self._z), self._end1_setter)
+
+    def _end2_setter(self,value):
+        self.x2 =  value.x
+        self.y2 = value.y
+        self.z2 = value.z
+
+    end2 = property(Vector3.Vector3(self._x,self._y,self._z), self._end2_setter)
+
+    def _x1_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._x1 = value
+        self.set_dirty()
+
+    x1 = property(self._x1, self._x1_setter)
+
+    def _y1_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._y1 = value
+        self.set_dirty()
+
+    y1 = property(self._y1, self._y1_setter)
+
+    def _z1_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._z1 = value
+        self.set_dirty()
+
+    z1 = property(self._z1, self._z1_setter)
+
+    def _x2_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._x2 = value
+        self.set_dirty()
+
+    x2 = property(self._x2, self._x2_setter)
+
+    def _y2_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._y2 = value
+        self.set_dirty()
+
+    y2 = property(self._y2, self._y2_setter)
+
+    def _z2_setter(self,value):
+        super(Line,Line).validate_double(value)
+        self._z2 = value
+        self.set_dirty()
+
+    z2 = property(self._z2, self._z2_setter)
+
+    def _pixel_thickness_setter(self, value):
+        super(Line,Line).validate_double(value)
+        self._pixel_thickness = value
+        self.set_dirty()
+
+    pixel_thickness = property(self._pixel_thickness, self._pixel_thickness_setter)
+
+    def _color_setter(self, value):
+        self._color = color
+        self.set_dirty()
+
+    color = property(self._color, self._color_setter)
+
+    def translate(self,offset):
+        self.end1 += offset
+        self.end2 += offset
+
+    def send_message(self, udp_client):
+        path_bytes = self.shape_set.path_bytes
+        num_bytes = 48 + len(path_bytes)
+        buf = [i for i in range(num_bytes)]
+
+        buf[0] = 1
+        buf[1] = 1
+        super(Line,Line).write_double(buf,2, self._x1)
+        super(Line,Line).write_double(buf,8, self._y1)
+        super(Line,Line).write_double(buf,14, self._z1)
+        super(Line,Line).write_double(buf,20, self._x2)
+        super(Line,Line).write_double(buf,26, self._y2)
+        super(Line,Line).write_double(buf,32, self._z2)
+        super(Line,Line).write_double(buf,38, self.pixel_thickness)
+        super(Line,Line).write_color(buf, 44, color, False)
+        for i in range(len(path_bytes)):
+            buf[47+i] = path_bytes[i]
+        bytes_sent_count = udp_client.sent(buf, len(buf))
+        assert bytes_sent_count == num_bytes
+
+        
