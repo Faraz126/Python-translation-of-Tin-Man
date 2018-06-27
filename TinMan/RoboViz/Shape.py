@@ -242,3 +242,142 @@ class Line(Shape):
         assert bytes_sent_count == num_bytes
 
         
+class Polygon(Shape):
+
+    def __init__(self, vertices = [], color = color.white):
+        if len(vertices) > 255:
+            raise(BaseException('Polygon may have no more than 255 vertices'))
+        self._vertices = vertices
+        self._color = color
+
+    def _color_setter(self, value):
+        self._color = value
+        self.set_dirty()
+
+    color = property(self._color, self._color_setter)
+
+    def __getitem__(self,index):
+        return self._vertices[index]
+    
+    def __setitem__(self,index, value):
+        self._vertices.__setitem__(index, value)
+        self.set_dirty()
+    
+    def add(self, vertex):
+        self._vertices.append(vertex)
+        self.set_dirty()
+
+    def add_range(self,vertices):
+        self._vertices.extend(vertices)
+        self.set_dirty()
+
+    def remove_at(self,index):
+        del self._vertices[index]
+        self.set_dirty()
+
+    def insert_at(self, index, vertex):
+        self._vertices.insert(index,vertex)
+        self.set_dirty()
+
+    def clear(self):
+        del self._vertices
+        self._vertices = []
+        self.set_dirty()
+
+    def translate(self, offset):
+        if offset == Vector3.Vector3():
+            return
+        for var in range(0, len(self._vertices)):
+            self._vertices += offset
+        self.set_dirty()
+    
+    def send_message(self, udp_client):
+        path_bytes = self.shape_set.path_bytes
+        num_bytes = (18*len(self._vertices)) + 8 + len(path_bytes)
+        buf = [None for i in range(num_bytes)]
+        buf[0] = 1
+        buf[1] = 4
+        buf[2] = bytes(len(self._vertices))
+        super(Polygon,Polygon).write_color(buf, 3, self.color, True)
+
+        offset = 7
+
+        for vertex in self._vertices:
+            super(Polygon,Polygon).write_double(buf,offset,vertex.x)
+            offset += 6
+            super(Polygon,Polygon).write_double(buf,offset,vertex.y)
+            offset += 6
+            super(Polygon,Polygon).write_double(buf,offset,vertex.z)
+            offset += 6
+
+        for i in range(len(path_bytes)):
+            buf[offset+i] = path_bytes[i]
+        
+        bytes_sent_count = udp_client.send(buf, len(buf))
+        assert bytes_sent_count == num_bytes
+
+class Circle(Shape):
+
+    def __init__(self, x = 0, y = 0, radius_metre = 0.5, pixel_thickness = 5, color = color.white):
+        self._center_x = x
+        self._center_y = y
+        self._radius_metres = radius_metre
+        self._pixel_thickness = pixel_thickness
+        self._color = color
+
+    def _center_x_setter(self,value):
+        super(Circle,Circle).validate_double(value)
+        self._center_x = value
+        self.set_dirty()
+
+    center_x = property(self._center_x, self._center_x_setter)
+
+    def _center_y_setter(self,value):
+        super(Circle,Circle).validate_double(value)
+        self._center_y = value
+        self.set_dirty()
+
+    center_y = property(self._center_y, self._center_y_setter)
+
+    def _radius_metres_setter(self,value):
+        super(Circle,Circle).validate_double(value)
+        self.radius_metres = value
+        self.set_dirty()
+
+    radius_metres = property(self._radis_metres, self._radius_metres_setter)
+
+    def _pixel_thickness_setter(self,value):
+        super(Circle,Circle).validate_double(value)
+        self._pixel_thickness = value
+        self.set_dirty()
+
+    pixel_thickness = property(self._pixel_thickness, self._pixel_thicnkess_setter)
+
+    def _color_setter(self,value):
+        self._color = value
+        self.set_dirty()
+
+    color = property(self._color, self._color_setter)
+
+    def translate(self, offset):
+        self._center_x += offset.x
+        self._center_y += offset.y
+        self.set_dirty()
+
+    def send_message(self, udp_client):
+        path_bytes = self.shape_set.path_bytes
+        num_bytes = 30 + len(path_bytes)
+        buf = [None for i in range(num_bytes)]
+
+        buf[0] = 1
+        super(Circle,Circle).write_double(buf,2, self.center_x)
+        super(Circle,Circle).write_double(buf,8, self.center_y)
+        super(Circle,Circle).write_double(buf,14, self.radius_metres)
+        super(Circle,Circle).write_double(buf,20, self.pixel_thickness)
+        super(Circle,Circle).write_color(buf,26, self.color, False)
+
+        for i in range(len(path_bytes)):
+            buf[i+29] = path_bytes[i]
+        
+        bytes_sent_count = udp_client.send(buf, len(buf))
+        assert bytes_sent_count == num_bytes
