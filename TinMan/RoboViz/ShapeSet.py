@@ -14,8 +14,8 @@ class ShapeSet:
             raise(BaseException('Cannot contain the "." character. If you wish to represesnt hierarchy, use nested ShapeSet objects.'))
         self._name = name
 
-        self._shapes = []]
-        self._subsets = []]
+        self._shapes = []
+        self._subsets = []
         self._parent_set = None
         self._parent_root = None
         self._path = None
