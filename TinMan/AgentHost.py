@@ -5,6 +5,7 @@ from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
 from RoboViz import RoboVizRemote,RoboVizExtensions,Shape,ShapeSet
 from axel import Event
 from datetime import timedelta
+import socket
 
 class AgentHost:
     default_tcp_port = 3100
@@ -61,4 +62,15 @@ class AgentHost:
         
         AgentHost._log.info('Connecting via TCP to' + self.host_name + ":" + str(self._port_name_setter))
 
+        try:
+            socket.create_connection((self.host_name, self.port_number))
+        except:
+            AgentHost._log.Error('Unable to connect to '+ self.host_name+ " : "+ self.port_number)
+            raise(BaseException())
         
+        AgentHost._log.info('Connected.')
+        self.has_run = True
+        AgentHost._log.info('Initializing agent')
+        agent.context = self.context
+        agent.on_initialise()
+    
