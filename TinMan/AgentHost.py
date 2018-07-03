@@ -107,13 +107,13 @@ class AgentHost:
                 perceptor_state = parser.state
                 errors = parser.errorrs
             
-            if errors.has_error:
-                AgentHost._log.error('Parse Error: ' errors.error_messages + '\nData:' + data)
+                if errors.has_error:
+                    AgentHost._log.error('Parse Error: ' errors.error_messages + '\nData:' + data)
 
-            for hinge in agent.body.all_hinges:
-                angle = perceptor_state.try_get_hinge_angle(hinge)
-                if angle != False:
-                    hinge.angle = angle
+                for hinge in agent.body.all_hinges:
+                    angle = perceptor_state.try_get_hinge_angle(hinge)
+                    if angle != False:
+                        hinge.angle = angle
 
                 if perceptor_state.team_side !=  PerceptorState.FieldSide.unkwonn:
                     self.context.team_side = perceptor_state.team_side
@@ -127,10 +127,34 @@ class AgentHost:
 
                 agent.Think(perceptor_state)
 
-                for hing in agent.body.all_hinges:
+                for hinge in agent.body.all_hinges:
                     hinge.compute_control_function(self.context, perceptor_state)
                 
                 self._context.flush_commands(commands)
+                commands += [i.get_command() for i in agent.body.all_hinges if i.is_desired_speed_changed]
+                commands.append(synchronise_command())
+
+                send_commands(client, commands)
+
+                commands = []
+
+            agent.on_shutting_down()
+
+    
+    def stop(self):
+        self._stop_requested = True
+
+    def send_commands(client, commands):
+        command_str = concat_command_strings(commands)
+        NetworkUtil.write_string_with_32_bit_length_prefix(client, command_str)
+
+    def concat_command_strings(commands):
+        sb = ''
+        for command in commands:
+            sb += command + '\n'
+        return sb
+
+                
 
 
 
