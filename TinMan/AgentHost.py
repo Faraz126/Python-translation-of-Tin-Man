@@ -151,7 +151,7 @@ class AgentHost:
     def concat_command_strings(commands):
         sb = ''
         for command in commands:
-            sb += command + '\n'
+           sb = command.append_s_expression(sb)
         return sb
 
                 
