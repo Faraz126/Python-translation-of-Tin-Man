@@ -85,7 +85,7 @@ class AgentHost:
         agent.context = self.context
         agent.on_initialise()
 
-        with client = socket.socket(socket.AF_INET,socket.SOCK_STREAM) as client:
+        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as client:
             client.connect((self.host_name, self.port_number))
             self._log('Sending initialisation messages')
             send_commands(client, SceneSpecificationCommand(agent.body.rsg_path)

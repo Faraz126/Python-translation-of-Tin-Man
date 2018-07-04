@@ -26,7 +26,7 @@ class BeamCommand:
         self._rotation = rotation
 
     def append_s_expression(self,s):
-        s += "( " + str(round(self._x,6)+ ' ' +str(round(self._y,6))+  ' ' + str(round(self._rotation,6)) + ")"
+        s += "( " + str(round(self._x,6)) ' ' +str(round(self._y,6))+  ' ' + str(round(self._rotation,6)) + ")"
         return s
 
 class SceneSpecificationCommand:
