@@ -3,6 +3,7 @@ import sys
 from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
 from PerceptorParsing import switch_case
 import io,math
+from enum import Enum
 
 class AccelerometerState:
 
@@ -13,7 +14,7 @@ class AccelerometerState:
     def __str__(self):
         return str(self.label)+ " " + str(self.acceleration_vector)
 
-class FieldSide:
+class FieldSide(Enum):
     unkwonn = 0
     left = 1 
     right = 2
@@ -55,7 +56,7 @@ class HeardMessage:
     def __str__(self):
         return "Message " + "'" +str(self.text) + "'" + " at " + str(self.heard_at_time) + ' from ' + str(self.relative_direction)
 
-class Landmark:
+class Landmark(Enum):
     flag_left_top = 0
     flag_left_bottom = 1
     flag_right_top = 2
