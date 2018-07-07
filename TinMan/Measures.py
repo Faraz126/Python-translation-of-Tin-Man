@@ -90,3 +90,4 @@ class Measures:
         x = ((random.randint(0, 10000)/10000)*(x2-x1)) + x1
 
         return Vector3.Vector3(x,y,z)
+        
