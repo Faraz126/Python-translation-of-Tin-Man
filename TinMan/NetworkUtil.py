@@ -14,11 +14,11 @@ class NetworkUtil:
 
     def read_response_string(client, timeout):
         c_time = time.time()
-        while c_time < timeout:
+        while time.time() - c_time < timeout:
             prefix = client.recv(4)
             if prefix != b"":
                 break
-            elif c_time >= timeout:
+            elif time.time() - c_time >= timeout:
                 NetworkUtil._log.warn('No response recieved within time limit')
                 return None
             
