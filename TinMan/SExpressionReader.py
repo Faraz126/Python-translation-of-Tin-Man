@@ -11,7 +11,7 @@ class SExpressionReader:
         if stream == None:
             raise(BaseException('stream'))
         if length <= 0:
-            raise(BaseException('Length ' + str(length)+ ' Must be greater than zero.')
+            raise(BaseException('Length ' + str(length)+ ' Must be greater than zero.'))
         self._stream = stream
         self.length  = length
         self._pushed_char = -1
@@ -27,7 +27,7 @@ class SExpressionReader:
         if self._bytes_read == self.length:
             c = 0x00
             return False, c
-        i = self._stream.read_byte()
+        i = self._stream.recv(1)
         while i == -1:
 
             time.sleep(1)
@@ -43,7 +43,7 @@ class SExpressionReader:
 
     def skip_white_space(self):
         while True:
-            c = self.try_read_char():
+            c = self.try_read_char()
             if not c[0]:
                 return
             if not c[1].isspace():
@@ -170,6 +170,7 @@ class SExpressionReader:
             diff = min(1024,self.length - self._bytes_read)
             read = self._stream(self._rubbish, 0, diff)
             self._bytes_read += read
+        assert self._bytes_read == self.length
 
 
 
