@@ -22,7 +22,7 @@ class Wizard:
         Wizard._log.info("Connecting via TCP to " + self.host_name + ":" str(self.port_number))
 
         try:
-            client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            self.client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             client.connect((self.host_name, self.port_number))
         except:
             AgentHost._log.Error('Unable to connect to '+ self.host_name+ " : "+ self.port_number)
@@ -115,6 +115,53 @@ class Wizard:
     def get_vector_string(vector):
         return str(vector.x)+ " " + str(vector.y) + " " + str(vector.z)
 
+    def set_agent_position(self,uniform_num, team_side, new_position):
+        self.send_command('(agent (unum ' + str(uniform_num)+ ") (team " + self.get_side_string(team_side) + ") (pos " + self.get_vector_string(new_position)+ "))")
+        
+    def set_agent_position_and_direction(self, uniform_num, team_side, new_position, new_direction):
+        self.send_command("(agent (unum " + str(uniform_num)+ ") (team " + self.get_side_string(team_side)+ " ) (move " + self.get_vector_string(new_position) " " + str(new_direction.degrees) + "))" )
 
+    def set_agent_battery_level(self, uniform_num, team_side, battery_level):
+        self.send_command("(agent (unum " + str(uniform_num)+ ") (team " + self.get_side_string(team_side) + ") (battery " + str(battery_level)+ "))")
 
+    def set_tempeature(self, uniform_num, team_side, temperature):
+        self.send_command("(agent (unum " +str(uniform_num) + ") (team " +self.get_side_string(team_side + ") (temperature " + str(temperature)"))"))
+    
+    def set_ball_position(self, new_position):
+        self.send_command("(ball (pos " + self.get_vector_string(new_position) + "))")
 
+    def set_ball_position_and_velocity(self, new_position, new_velocity):
+        self.send_command("(ball (pos " + self.get_vector_string(new_position)+ ") (vel " + self.get_vector_string(new_velocity)"))" )
+
+    def set_ball_velocity(self, new_velocity):
+        self.send_command("(ball (vel " + self.get_vector_string(new_velocity)+ "))")
+    
+    def set_play_mode(self, play_mode):
+        self.send_command("(playmode " + play_mode.get_server_string + ")")
+
+    def drop_ball(self):
+        self.send_command("(dropball)")
+
+    def kick_off(self, team):
+        self.send_command("(kickoff " + self.get_side_string(team) + ")")
+
+    def select_agent(self, uniform_num, team_side):
+        self.send_command("(select (unum " + str(uniform_num) + ") (team " + self.get_side_string(team_side + "))"))
+
+    def kill_agent(self, uniform_num, team_side):
+        self.send_command("(agent (unum " + str(uniform_num + ") (team "+ self.get_side_string(team_side + "))")))
+
+    def kill_selected_agent(self):
+        self.send_command("(kill)")
+
+    def repoisition_agent(self, uniform_num, team_side):
+        self.send_command("(repos (unum " + str(uniform_num) + ") (team " + self.get_side_string(team_side) + "))")
+
+    def repoisition_selected_agent(self):
+        self.send_command("(repos)")
+
+    def kill_simulator(self):
+        self.send_command("(killsim)")
+
+    def send_command(self, string):
+        NetworkUtil.write_string_with_32_bit_length_prefex(self.client, string)
