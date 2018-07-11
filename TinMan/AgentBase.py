@@ -46,6 +46,9 @@ class AgentBase:
     def stop_simulation(self):
         self.log.info('Agent requested that the simulation stops')
         self.is_alive = False
+
+    def on_initialise(self):
+        pass
         
 
 

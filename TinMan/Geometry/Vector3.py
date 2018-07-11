@@ -54,6 +54,9 @@ class Vector3:
     def with_y(self,newy):
         return Vector3(self.x,newy,self.z)
 
+    def with_z(self,newz):
+        return Vector3(self.x,self.y,newz)
+
     def abs(self):
         return Vector3(abs(self.x),abs(self.y),abs(self.z))
 
