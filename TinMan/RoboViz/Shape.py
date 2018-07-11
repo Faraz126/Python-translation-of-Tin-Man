@@ -1,8 +1,7 @@
 import sys,math
 
-from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
-from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
-from RoboViz import RoboVizRemote,RoboVizExtensions,ShapeSet
+from Geometry import Vector3
+
 
 class Shape:
     def __init__(self):

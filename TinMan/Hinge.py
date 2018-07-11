@@ -1,13 +1,10 @@
 import sys,math
 
-from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
-from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
-from RoboViz import RoboVizRemote,RoboVizExtensions,Shape,ShapeSet
+from TinMan.Geometry import AngularSpeed
 
-from datetime import timedelta
-import AgentHost
 
 class Hinge:
+
     def __init__(self, perceptor_label, effector_label, min_angle, max_angle):
         if perceptor_label == None:
             raise(BaseException('Perceptor_Label'))

@@ -1,6 +1,7 @@
-from Hinge import Hinge
-from Geometry.angles import Angle
-from Geometry.Polar import Polar
+from TinMan.Hinge import Hinge
+from TinMan.Geometry.angles import Angle
+from TinMan.Geometry.Polar import Polar
+
 class NaoBody:
     weight_kilograms = 4.5
     height = 0.57

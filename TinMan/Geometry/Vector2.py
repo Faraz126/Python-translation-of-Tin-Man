@@ -1,4 +1,4 @@
-from Geometry import angles, AngularSpeed,GeometryUtil,Polar,TransformationMatrix
+from Geometry import angles
 import math
 
 class Vector2:

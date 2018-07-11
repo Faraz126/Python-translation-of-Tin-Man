@@ -1,4 +1,4 @@
-from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
+from Geometry import angles, Polar, Vector3
 from PerceptorParsing import Scanner
 from datetime import timedelta
 import math

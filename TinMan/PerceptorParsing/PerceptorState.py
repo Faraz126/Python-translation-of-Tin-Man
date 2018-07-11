@@ -1,7 +1,7 @@
 import sys
 
-from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
-from PerceptorParsing import switch_case
+from Geometry import angles,Polar,Vector3
+
 import io,math
 from enum import Enum
 

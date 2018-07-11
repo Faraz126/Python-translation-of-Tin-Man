@@ -1,5 +1,5 @@
 import math
-from Geometry import angles
+from TinMan.Geometry import angles
 
 class AngularSpeed:
     epsilon = 0.0001

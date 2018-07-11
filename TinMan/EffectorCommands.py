@@ -1,11 +1,5 @@
 import sys,math
 
-from Geometry import angles,AngularSpeed, GeometryUtil,Polar,TransformationMatrix,Vector2,Vector3
-from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
-from RoboViz import RoboVizRemote,RoboVizExtensions,Shape,ShapeSet
-from axel import Event
-from datetime import timedelta
-import socket
 import AgentHost
 
 class HingeSpeedCommand:
