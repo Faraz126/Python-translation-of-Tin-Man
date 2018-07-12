@@ -1,5 +1,5 @@
-#import math
-#import random
+import math
+import random
 
 class Angle:
     epsilon = 0.0001

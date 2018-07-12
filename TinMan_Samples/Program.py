@@ -1,5 +1,6 @@
 import TinMan
 from TinMan import AgentHost
+from TinMan_Samples.WavingAgent import WavingAgent
 
 if __name__ == "__main__":
     print('''

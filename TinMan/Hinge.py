@@ -26,7 +26,10 @@ class Hinge:
         self._control_function = None
         self.set_desired_speed_internal(value)
 
-    desired_speed = property(self._desired_speed, self._speed_setter)
+    def _speed_getter(self):
+        return self._desired_speed
+
+    desired_speed = property(_speed_getter, _speed_setter)
 
 
     def get_commmand(self):

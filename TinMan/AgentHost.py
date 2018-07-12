@@ -5,6 +5,7 @@ from TinMan.Log import Log
 from TinMan import SimulationContext
 from datetime import timedelta
 import socket
+from TinMan.EffectorCommands import *
 
 class AgentHost:
     default_tcp_port = 3100
@@ -21,6 +22,7 @@ class AgentHost:
         self.context = _context
         self.has_run = None
         self._stop_requested = False
+        self._desired_uniform_number = None
 
     def _team_name_setter(self,value):
         if self.has_run != None:
@@ -57,7 +59,7 @@ class AgentHost:
         self._host_name = value
 
     def _host_name_getter(self):
-        return self.host_name
+        return self._host_name
 
     host_name = property(_host_name_getter, _host_name_setter)
 
@@ -70,7 +72,7 @@ class AgentHost:
         self._port_number = value
 
     def _port_name_getter(self):
-        return self.port_name
+        return self._port_number
 
     port_name = property(_port_name_getter, _port_name_setter)
 
@@ -85,7 +87,7 @@ class AgentHost:
 
         try:
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            client.connect((self.host_name, self.port_number))
+            client.connect((self.host_name, self.port_name))
         except:
             AgentHost._log.Error('Unable to connect to '+ self.host_name+ " : "+ self.port_number)
             raise(BaseException())
@@ -93,24 +95,26 @@ class AgentHost:
         AgentHost._log.info('Connected.')
         self.has_run = True
         AgentHost._log.info('Initializing agent')
+       
         agent.context = self.context
         agent.on_initialise()
 
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as client:
-            client.connect((self.host_name, self.port_number))
-            self._log('Sending initialisation messages')
-            send_commands(client, SceneSpecificationCommand(agent.body.rsg_path))
+            client.connect((self.host_name, self.port_name))
+            self._log.info('Sending initialisation messages')
+            AgentHost.send_commands(client, [SceneSpecificationCommand(agent.body.rsg_path)])
+            client.settimeout(0.5)
             NetworkUtil.read_response_string(client, 0.5)
-
-            send_commands(client, InitialisePlayerCommand(self.desired_uniform_number, self.team_name))
+            AgentHost.send_commands(client, [InitialisePlayerCommand(self.desired_uniform_number, self.team_name)])
             NetworkUtil.read_response_string(client, 0.5)
 
             commands = list()
 
-            while not self._self_requested and agent.is_alive:
+            while not self._stop_requested and agent.is_alive:
+                
                 data = NetworkUtil.read_response_string(client, 0.1)
-
-                if not data:
+                
+                if not data or data == None:
                     continue
 
                 parser = Parser.Parser(Scanner.Scanner(Scanner.StringBuffer(data)))
@@ -142,10 +146,11 @@ class AgentHost:
                     hinge.compute_control_function(self.context, perceptor_state)
                 
                 self._context.flush_commands(commands)
+
                 commands += [i.get_command() for i in agent.body.all_hinges if i.is_desired_speed_changed]
                 commands.append(synchronise_command())
 
-                send_commands(client, commands)
+                AgentHost.send_commands(client, commands)
 
                 commands = []
 
@@ -156,11 +161,12 @@ class AgentHost:
         self._stop_requested = True
 
     def send_commands(client, commands):
-        command_str = concat_command_strings(commands)
+        command_str = AgentHost.concat_command_strings(commands)
         NetworkUtil.write_string_with_32_bit_length_prefix(client, command_str)
 
     def concat_command_strings(commands):
         sb = ''
+        print(commands)
         for command in commands:
            sb = command.append_s_expression(sb)
         return sb

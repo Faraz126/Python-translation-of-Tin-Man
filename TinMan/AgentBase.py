@@ -1,20 +1,25 @@
 import sys,math
-
+from TinMan.Log import Log
 
 class AgentBase:
     def __init__(self, body):
         if body == None:
             raise(BaseException('body'))
         self.body = body
-        self.log = log.create()
+        self.log = Log.create()
         self.is_alive = True
         self.think_completed = None
         self.shutting_down = None
         self._context = None
     
-    measures = property(self._context.measures)
+    def _context_measures(self):
+        return self._context.measures
+    measures = property(_context_measures)
 
-    Iagent_body = property(self.body)
+    def _body_getter(self):
+        return self.body
+
+    Iagent_body = property(_body_getter)
 
     def __Iagent_context_getter__(self):
         if self._context == None:
@@ -26,10 +31,12 @@ class AgentBase:
         if self._context != None:
             raise(BaseException('Context has already been set.'))
         self._context = value
+    
+    
 
-    Iagent_context = property(self.__Iagent_context_getter__, self.__Iagent_context_setter__)
+    Iagent_context = property(__Iagent_context_getter__, __Iagent_context_setter__)
 
-    context = property(self.Iagent_context)
+    context = Iagent_context
 
     def Iagent_think(self, state):
         self.think(state)
