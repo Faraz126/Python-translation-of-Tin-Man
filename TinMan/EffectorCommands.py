@@ -1,6 +1,6 @@
 import sys,math
 
-import AgentHost
+from TinMan import AgentHost
 
 class HingeSpeedCommand:
     
@@ -20,7 +20,7 @@ class BeamCommand:
         self._rotation = rotation
 
     def append_s_expression(self,s):
-        s += "( " + str(round(self._x,6)) ' ' +str(round(self._y,6))+  ' ' + str(round(self._rotation,6)) + ")"
+        s += "( " + str(round(self._x,6)) +  ' ' + str(round(self._y,6))+  ' ' + str(round(self._rotation,6)) + ")"
         return s
 
 class SceneSpecificationCommand:
@@ -29,7 +29,7 @@ class SceneSpecificationCommand:
         self._rsg_path = rsgpath
 
     def append_s_expression(self,s):
-        s += "(scene " + self._rsg_path ")"
+        s += "(scene " + self._rsg_path +  ")"
         return s
     
 class InitialisePlayerCommand:
@@ -38,7 +38,7 @@ class InitialisePlayerCommand:
         self._team_name = team_name
 
     def append_s_expression(self,s):
-        s += "( (unum " + str(self._uniform_number) + ") (teamname " + self._team_name "))"
+        s += "( (unum " + str(self._uniform_number) + ") (teamname " + self._team_name  + "))"
         return s
 class SayCommand:
     def __init__(self, message):

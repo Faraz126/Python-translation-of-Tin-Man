@@ -1,8 +1,8 @@
-from Log import Log
-from PerceptorParsing.PerceptorState import FieldSide
-from PlayMode import PlayMode
-from Measures import Measures
-from EffectorCommands import Message, SayCommand,BeamCommand
+from TinMan.Log import Log
+from TinMan.PerceptorParsing.PerceptorState import FieldSide
+from TinMan.PlayMode import PlayMode
+from TinMan.Measures import Measures
+from TinMan.EffectorCommands import Message, SayCommand,BeamCommand
 
 class SimulationContext:
     _log = Log.create()

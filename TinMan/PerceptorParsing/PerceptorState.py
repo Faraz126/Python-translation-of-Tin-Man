@@ -1,6 +1,6 @@
 import sys
 
-from Geometry import angles,Polar,Vector3
+from TinMan.Geometry import angles,Polar,Vector3
 
 import io,math
 from enum import Enum

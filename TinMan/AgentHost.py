@@ -1,6 +1,8 @@
 import sys,math
-from PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
-
+from TinMan.PerceptorParsing import switch_case,Parser,Scanner,PerceptorState
+from TinMan.NetworkUtil import NetworkUtil
+from TinMan.Log import Log
+from TinMan import SimulationContext
 from datetime import timedelta
 import socket
 
@@ -9,13 +11,13 @@ class AgentHost:
     default_host_name = 'localhost'
     cycle_period_seconds = 0.02
     cycle_period = timedelta(cycle_period_seconds)
-    _log = log.create()
+    _log = Log.create()
 
     def __init__(self):
         self._host_name = AgentHost.default_host_name
         self._port_number = AgentHost.default_tcp_port
         self._team_name = 'TinManBots'
-        _context = SimulationContext(self)
+        _context = SimulationContext.SimulationContext(self)
         self.context = _context
         self.has_run = None
         self._stop_requested = False
@@ -27,7 +29,10 @@ class AgentHost:
             raise(BaseException('value'))
         self._team_name = value
 
-    team_name = property(self._team_name, self._team_name_setter)
+    def _team_name_getter(self):
+        return self._team_name
+
+    team_name = property(_team_name_getter, _team_name_setter)
 
     def _desired_uniform_number_setter(self, value):
         if self.has_run != None:
@@ -36,7 +41,10 @@ class AgentHost:
             raise(BaseException('Value '+ str(value)+ ' The desired uniform number must be zero or a positive integer'))
         self._desired_uniform_number = value
 
-    desired_uniform_number = property(self._desired_uniform_number, self._desired_uniform_number_setter)
+    def _desired_uniform_number_getter(self):
+        return self._desired_uniform_number
+
+    desired_uniform_number = property(_desired_uniform_number_getter, _desired_uniform_number_setter)
 
 
     def _host_name_setter(self,value):
@@ -48,7 +56,10 @@ class AgentHost:
             raise(BaseException('HostName cannot be blank ' + value))
         self._host_name = value
 
-    host_name = property(self._host_name, self._host_name_setter)
+    def _host_name_getter(self):
+        return self.host_name
+
+    host_name = property(_host_name_getter, _host_name_setter)
 
 
     def _port_name_setter(self,value):
@@ -58,7 +69,10 @@ class AgentHost:
             raise(BaseException('value ' + str(value)+ ' PortNumber must be greater than zero' ))
         self._port_number = value
 
-    port_name = property(self._port_name, self._port_name_setter)
+    def _port_name_getter(self):
+        return self.port_name
+
+    port_name = property(_port_name_getter, _port_name_setter)
 
     def run(self, agent):
         if agent == None:
@@ -85,7 +99,7 @@ class AgentHost:
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as client:
             client.connect((self.host_name, self.port_number))
             self._log('Sending initialisation messages')
-            send_commands(client, SceneSpecificationCommand(agent.body.rsg_path)
+            send_commands(client, SceneSpecificationCommand(agent.body.rsg_path))
             NetworkUtil.read_response_string(client, 0.5)
 
             send_commands(client, InitialisePlayerCommand(self.desired_uniform_number, self.team_name))
@@ -105,7 +119,7 @@ class AgentHost:
                 errors = parser.errorrs
             
                 if errors.has_error:
-                    AgentHost._log.error('Parse Error: ' errors.error_messages + '\nData:' + data)
+                    AgentHost._log.error('Parse Error: ' + errors.error_messages + '\nData:' + data)
 
                 for hinge in agent.body.all_hinges:
                     angle = perceptor_state.try_get_hinge_angle(hinge)
@@ -119,7 +133,7 @@ class AgentHost:
                     self.context.play_mode = perceptor_state.play_mode
 
                 if perceptor_state.uniform_number.has_value:
-                    assert perceptor_state.uniform_number > 0:
+                    assert perceptor_state.uniform_number > 0
                     self.context.uniform_number = perceptor_state.uniform_number
 
                 agent.Think(perceptor_state)

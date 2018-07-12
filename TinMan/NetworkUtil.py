@@ -1,6 +1,6 @@
-import sockets
+import socket
 import struct
-from Log import Log
+from TinMan.Log import Log
 import time
 
 class NetworkUtil:

@@ -1,4 +1,4 @@
-from Geometry import angles
+from TinMan.Geometry import angles
 import math
 
 class Vector3:

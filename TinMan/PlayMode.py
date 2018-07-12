@@ -18,19 +18,36 @@ class PlayMode(Enum):
     goal_right = 14
     free_kick_left = 15
     free_kick_right = 16
-    None = 17
+    none = 17
 
 class PlayModeUtil1:
     _play_mode_by_string_code = {'before_kick_off': PlayMode.before_kick_off,
-        'kick_off_left': PlayMode.kick_off_left, 'kick_off_right': PlayMode.kick_off_right
-        'play_on': PlayMode.play_on, 'kick_in_left': PlayMode.kick_in_left, 'kick_in_right': PlayMode.kick_in_right
-        'corner_kick_left' : PlayMode.corner_kick_left, 'corner_kick_right': PlayMode.corner_kick_right
-        'goal_kick_left': PlayMode.goal_kick_left, 'goal_kick_right': PlayMode.goal_kick_right
+        'kick_off_left': PlayMode.kick_off_left, 'kick_off_right': PlayMode.kick_off_right,
+        'play_on': PlayMode.play_on, 'kick_in_left': PlayMode.kick_in_left, 'kick_in_right': PlayMode.kick_in_right,
+        'corner_kick_left' : PlayMode.corner_kick_left, 'corner_kick_right': PlayMode.corner_kick_right,
+        'goal_kick_left': PlayMode.goal_kick_left, 'goal_kick_right': PlayMode.goal_kick_right,
         'offside_left': PlayMode.offside_left, 'offside_right': PlayMode.offside_right,
         'game_over': PlayMode.game_over, 'goal_left': PlayMode.goal_left, 'goal_right': PlayMode.goal_kick_right,
-        'free_kick_left': PlayMode.free_kick_left, 'free_kick_right': PlayMode.free_kick_right
-        'unknown': PlayMode.None}
-    _string_code_by_play_mode = {_play_mode_by_string_code[i]:i for i in _play_mode_by_string_code}
+        'free_kick_left': PlayMode.free_kick_left, 'free_kick_right': PlayMode.free_kick_right,
+        'unknown': PlayMode.none}
+
+    _string_code_by_play_mode = {{'before_kick_off': PlayMode.before_kick_off,
+        'kick_off_left': PlayMode.kick_off_left, 'kick_off_right': PlayMode.kick_off_right,
+        'play_on': PlayMode.play_on, 'kick_in_left': PlayMode.kick_in_left, 'kick_in_right': PlayMode.kick_in_right,
+        'corner_kick_left' : PlayMode.corner_kick_left, 'corner_kick_right': PlayMode.corner_kick_right,
+        'goal_kick_left': PlayMode.goal_kick_left, 'goal_kick_right': PlayMode.goal_kick_right,
+        'offside_left': PlayMode.offside_left, 'offside_right': PlayMode.offside_right,
+        'game_over': PlayMode.game_over, 'goal_left': PlayMode.goal_left, 'goal_right': PlayMode.goal_kick_right,
+        'free_kick_left': PlayMode.free_kick_left, 'free_kick_right': PlayMode.free_kick_right,
+        'unknown': PlayMode.none}[i]:i for i in {'before_kick_off': PlayMode.before_kick_off,
+        'kick_off_left': PlayMode.kick_off_left, 'kick_off_right': PlayMode.kick_off_right,
+        'play_on': PlayMode.play_on, 'kick_in_left': PlayMode.kick_in_left, 'kick_in_right': PlayMode.kick_in_right,
+        'corner_kick_left' : PlayMode.corner_kick_left, 'corner_kick_right': PlayMode.corner_kick_right,
+        'goal_kick_left': PlayMode.goal_kick_left, 'goal_kick_right': PlayMode.goal_kick_right,
+        'offside_left': PlayMode.offside_left, 'offside_right': PlayMode.offside_right,
+        'game_over': PlayMode.game_over, 'goal_left': PlayMode.goal_left, 'goal_right': PlayMode.goal_kick_right,
+        'free_kick_left': PlayMode.free_kick_left, 'free_kick_right': PlayMode.free_kick_right,
+        'unknown': PlayMode.none}}
 
     def try_parse(mode_str):
         if mode_str in PlayModeUtil1._play_mode_by_string_code:

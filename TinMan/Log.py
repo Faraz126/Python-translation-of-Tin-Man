@@ -5,13 +5,13 @@ class Log:
     _instance = None
 
     def create():
-        if log._instance == None:
-            log._instance = log()
+        if Log._instance == None:
+            Log._instance = Log()
         
-        return log._instance
+        return Log._instance
     
     def __init__(self):
-        return self
+        pass
     
     def verbose(self,m):
         self.write_console(m, fg.gray, bg.black)

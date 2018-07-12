@@ -1,5 +1,5 @@
-from Geometry import angles, Polar, Vector3
-from PerceptorParsing import Scanner
+from TinMan.Geometry import angles, Polar, Vector3
+from TinMan.PerceptorParsing import Scanner
 from datetime import timedelta
 import math
 
@@ -24,7 +24,7 @@ class Parser:
         else:
             d = float()
             try:
-                d = float(S):
+                d = float(S)
             except ValueError:
                 Error.sem_err("Unable to convert \ " + s + " \ to a float")
             return d
@@ -62,7 +62,7 @@ class Parser:
 
     def syn_err(self,n):
         if self.err_dist >= Parser.min_err_dist:
-            Errors.syn_err(la.line, la.col, n):
+            Errors.syn_err(la.line, la.col, n)
             self.err_dist = 0
     
     def sem_err(Self,msg):
@@ -157,8 +157,11 @@ class Parser:
         return time
 
     def game_state_expr(self):
-        self.expect(9)self.expect(
-        pm_str = str(), player_id_dbl = float(), player_id = None, team_side = None
+        self.expect(9)
+        pm_str = str()
+        player_id_dbl = float()
+        player_id = None
+        team_side = None
         if self.la.kind == 10:
             self.get()
             player_id_dlb = self.double()
@@ -172,7 +175,7 @@ class Parser:
                     self.get()
                     team_side = fieldside.FieldSide.left
                 else:
-                    self.la.kind == 13:
+                    
                     self.get()
                     team_side = fieldside.FieldSide.right
             self.expect(5)
@@ -451,9 +454,9 @@ class Parser:
             elif self.la.kind == 48:
                 message = self.hear_expr()
                 self.messages.append(message)
-        self.state = PerceptorState(self.simulation_time, self.game_time, self.play_mode, self.team_side
-        self.player_id, self.gyro_states, self.hinge_states, self.univsersal_joints_states, self.touch_states, self.force_states, self.accelerometer_states
-        self.landmark_positiions, self.visible_lines, self.team_mate_positions, self.opposition_positions, self.ball_position, self.agent_battery, self.agent_temperature
+        self.state = PerceptorState(self.simulation_time, self.game_time, self.play_mode, self.team_side,
+        self.player_id, self.gyro_states, self.hinge_states, self.univsersal_joints_states, self.touch_states, self.force_states, self.accelerometer_states,
+        self.landmark_positiions, self.visible_lines, self.team_mate_positions, self.opposition_positions, self.ball_position, self.agent_battery, self.agent_temperature,
         self.messages, self.agent_position)
 
     def parse(self):
@@ -474,7 +477,7 @@ class ParseError:
 
     def to_string(self):
         m = self.message
-        has_info = self.line_number != -1 or self.column_number != -1 or self.error_code != -1:
+        has_info = self.line_number != -1 or self.column_number != -1 or self.error_code != -1
         info_yet = False
 
         if has_info:
@@ -500,8 +503,8 @@ class ParseError:
 
 class Errors:
     items = []
-    has_error = property(bool(Errors.items))
-    error_messages = property(error_getter)
+    has_error = property(bool(items))
+    
 
     def error_getter():
         if not Errors.items:
@@ -510,6 +513,8 @@ class Errors:
         for var in Errors.items:
             s += var + '\n'
         return s
+    
+    error_messages = property(error_getter)
     def syn_err(line, col, n):
         if n == 0:
             s = 'EOF expoected'
@@ -624,10 +629,13 @@ class Errors:
         else:
             s = 'error code' + str(n)
         
-    Errors.add_error(line,col, n, s)
+        Errors.add_error(line,col, n, s)
+    
 
     def add_error(line, col, code,msg):
         Errors.items.append(ParseError(line, col, code,msg))
+    
+
     
     def sem_err(*args):
         if len(args) == 3:

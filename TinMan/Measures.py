@@ -1,7 +1,7 @@
-import Log
-from Geometry import Vector3
+from TinMan import Log
+from TinMan.Geometry import Vector3
 from configparser import ConfigParser
-from PerceptorParsing import PerceptorState
+from TinMan.PerceptorParsing import PerceptorState
 import random
 class Measures:
     _log = Log.Log.create()

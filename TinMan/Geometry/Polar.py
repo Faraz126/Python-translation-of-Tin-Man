@@ -1,4 +1,4 @@
-from Geometry import Vector3
+from TinMan.Geometry import Vector3
 
 class Polar: #Immutable Data type
     def __init__(self,distance =0,theta = 0,phi=0):
