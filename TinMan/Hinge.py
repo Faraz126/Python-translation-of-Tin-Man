@@ -19,7 +19,7 @@ class Hinge:
         self.angle = None
         self.is_desired_speed_changed = None
         self._desired_speed = AngularSpeed.AngularSpeed(math.nan)
-        self._control_function = False
+        self._control_function = None
 
 
     def _speed_setter(self, value):
@@ -33,7 +33,7 @@ class Hinge:
 
 
     def get_commmand(self):
-        if not is_desired_speed_changed:
+        if not self.is_desired_speed_changed:
             raise(BaseException('The speed value for this hinge was not changed. Check is_speed_changed before calling this method'))
         self.is_desired_speed_changed = False
         return HingeSpeedCommand(self, self.desired_speed)
@@ -53,14 +53,15 @@ class Hinge:
     def has_control_function(self):
         return self._control_function != None
 
-    def compute_control_funcition(self, context, perceptor_state):
+    def compute_control_function(self, context, perceptor_state):
         fun = self._control_function
         if fun == None:
+            print('fun is none')
             return
+        
+        desired_speed = fun(self,context, perceptor_state)
 
-        desired_speed = fun(this,context, perceptor_state)
-
-        if not math.isnan(desired_speed):
+        if not desired_speed.is_nan:
             self.set_desired_speed_internal(desired_speed)
 
     def validate_angle(self, angle):
@@ -74,5 +75,21 @@ class Hinge:
 
     def limit_angle(self,angle):
         return angle.limit(self.min_angle, self.max_angle)
+    
+    def move_to_with_gain(self, desired_angle, gain):
+        if self == None:
+            raise(BaseException('hinge'))
+        
+        def func(h,c,state):
+            
+            angle_diff = desired_angle - h.angle
+
+            if angle_diff.abs.degrees < 1:
+                return AngularSpeed.AngularSpeed(0)
+            speed = angle_diff.degrees*gain
+
+            return AngularSpeed.AngularSpeed.from_degrees_per_second(speed)
+
+        self.set_control_function(func)
         
         

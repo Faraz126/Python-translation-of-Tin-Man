@@ -146,7 +146,7 @@ class Angle:
         return not a.equals(b)
 
     def __str__(self):
-        return str(round(self.radians_to_degrees(self.radians),2))+ ' Degrees'
+        return str(round(Angle.radians_to_degrees(self.radians),2))+ ' Degrees'
 
 
 

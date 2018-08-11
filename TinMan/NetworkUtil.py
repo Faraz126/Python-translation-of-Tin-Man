@@ -10,6 +10,7 @@ class NetworkUtil:
 
         payload = msg.encode('ascii')
         prefix = struct.pack('!I', len(payload))
+        print(prefix+payload)
         client.send(prefix + payload)
 
     def get_length(client, timeout):
@@ -28,16 +29,18 @@ class NetworkUtil:
         if not prefix:
             NetworkUtil._log.warn('No response recieved within time limit')
             return None
-
+        
         return struct.unpack('!I', prefix)[0]
 
     def read_response_string(client, timeout):
         
         payload_length = NetworkUtil.get_length(client, timeout)
+        
         if payload_length == None:
             return None
         raw_payload = client.recv(payload_length)
         payload = raw_payload.decode('ascii')
+        print(payload)
         return payload
 
 

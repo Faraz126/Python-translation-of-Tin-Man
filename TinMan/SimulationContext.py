@@ -11,7 +11,7 @@ class SimulationContext:
         if host == None:
             raise(BaseException('host'))
         self._host = host
-        self.team_side = FieldSide.unkwonn
+        self.team_side = FieldSide.unknown
         self.play_mode = PlayMode.unknown
         self.measures = Measures()
         self._beam_command = None

@@ -6,6 +6,7 @@ class AgentBase:
         if body == None:
             raise(BaseException('body'))
         self.body = body
+        
         self.log = Log.create()
         self.is_alive = True
         self.think_completed = None

@@ -23,7 +23,7 @@ class AngularSpeed:
         return angles.Angle.radians_to_degrees(self.radians_per_second)
     
     def _is_nan(self):
-        return math.is_nan(self.radians_per_second)
+        return math.isnan(self.radians_per_second)
     
     def _abs(self):
         return AngularSpeed(abs(self.radians_per_second))

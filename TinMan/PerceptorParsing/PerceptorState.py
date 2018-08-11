@@ -15,7 +15,7 @@ class AccelerometerState:
         return str(self.label)+ " " + str(self.acceleration_vector)
 
 class FieldSide(Enum):
-    unkwonn = 0
+    unknown= 0
     left = 1 
     right = 2
 
@@ -105,6 +105,7 @@ class PerceptorState:
                     angle = hj.angle
                     return angle
         angle = angles.Angle(math.nan)
+        return angle
         return False
 
     def __str__(self):

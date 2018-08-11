@@ -22,8 +22,7 @@ class WavingAgent(AgentBase):
             self.body.laj1.move_to_with_gain(Angle.from_degree(angle), 1)
         
         elif c == '?':
-
-            self.body.set_control_function(self.func)
+            self.body.laj1.set_control_function(self.fun)
         
     def fun(self, hinge,context, perceptorstate):
         if perceptorstate.simulation_time.milli_seconds %250 ==0:

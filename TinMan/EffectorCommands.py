@@ -50,6 +50,7 @@ class SayCommand:
         s += "(say " + self._message.text + ")"
 
 class SynchroniseCommand:
+    @staticmethod
     def append_s_expression(s):
         s += "(syn)"
         return s

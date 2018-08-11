@@ -1,5 +1,7 @@
 from TinMan.Geometry import angles, Polar, Vector3
-from TinMan.PerceptorParsing import Scanner
+from TinMan.PerceptorParsing import Scanner, PerceptorState
+from TinMan import PlayMode
+
 from datetime import timedelta
 import math
 
@@ -33,8 +35,8 @@ class Parser:
         self.landmark_positiions.append(LandMarkPosition.LandmarkPosition(landmark, pos))
 
     def __init__(self, scanner):
-        self.scannner = scanner
-        self.errorrs = Errors()
+        self.scanner = scanner
+        self.errors = Errors()
         self.t = Scanner.Token()
         self.la = Scanner.Token()
         self.err_dist = int()
@@ -42,7 +44,7 @@ class Parser:
         self.simulation_time = timedelta()
         self.game_time = timedelta()
         self.play_mode = PlayMode.PlayMode.unknown #needs to rewatch
-        self.team_side = FieldSide.FieldSide.unknown
+        self.team_side = PerceptorState.FieldSide.unknown
         self.player_id = int()
         self.agent_temperature = float()
         self.agent_battery = float()
@@ -74,7 +76,8 @@ class Parser:
         while True:
             self.t = self.la
             self.la = self.scanner.scan()
-            if la.kind <= Parser.max_t:
+            if self.la.kind <= Parser.max_t:
+                print('a')
                 self.err_dist += 1
                 break
         self.la = self.t
@@ -454,14 +457,14 @@ class Parser:
             elif self.la.kind == 48:
                 message = self.hear_expr()
                 self.messages.append(message)
-        self.state = PerceptorState(self.simulation_time, self.game_time, self.play_mode, self.team_side,
+        self.state = PerceptorState.PerceptorState(self.simulation_time, self.game_time, self.play_mode, self.team_side,
         self.player_id, self.gyro_states, self.hinge_states, self.univsersal_joints_states, self.touch_states, self.force_states, self.accelerometer_states,
         self.landmark_positiions, self.visible_lines, self.team_mate_positions, self.opposition_positions, self.ball_position, self.agent_battery, self.agent_temperature,
         self.messages, self.agent_position)
 
     def parse(self):
-        la = Scanner.Token()
-        la.val = ''
+        self.la = Scanner.Token()
+        self.la.val = ''
         self.get()
         self.perceptors()
         self.expect(0)
@@ -503,18 +506,26 @@ class ParseError:
 
 class Errors:
     items = []
-    has_error = property(bool(items))
+    
+    
+    
+    def getter(self):
+        return bool(Errors.items)
+
+    
+    has_error = property(getter)
+
     
 
-    def error_getter():
+    def error_messages():
         if not Errors.items:
-            return Errors.items
+            return str(Errors.items)
         s = str()
         for var in Errors.items:
             s += var + '\n'
         return s
     
-    error_messages = property(error_getter)
+    
     def syn_err(line, col, n):
         if n == 0:
             s = 'EOF expoected'

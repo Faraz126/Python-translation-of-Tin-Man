@@ -6,11 +6,12 @@ import io,math
 
 class Token:
     def __init__(self):
-        kind = int()
-        pos = int()
-        col = int()
-        line = int()
-        val = str()
+        self.kind = int()
+        self.pos = int()
+        self.col = int()
+        self.line = int()
+        self.val = str()
+        self.next = None
     
 class Buffer:
     EOF = sys.maxsize + 1
@@ -62,14 +63,14 @@ class StreamBuffer:
     def read(self):
         if self.buf_pos < self.buf_len:
             self.buf_pos += 1
-            return buf[self.buf_pos-1]
+            return self.buf[self.buf_pos-1]
         elif self.pos < self.file_len:
             self.buf_pos  = self.pos
             self.buf_pos += 1
-            return buf[self.buf_pos-1]
+            return self.buf[self.buf_pos-1]
         elif not self.stream and not self.stream.seekable() and self.read_next_stream_chunk() > 0:
             self.buf_pos += 1
-            return buf[self.buf_pos-1]
+            return self.buf[self.buf_pos-1]
         else:
             return Buffer.EOF
         
@@ -110,91 +111,91 @@ class StreamBuffer:
             return read
         return 0
 
-    class Scanner:
-        EOL = '\n'
-        eof_sym = 0
-        max_t = 50
-        no_sym = 50
+class Scanner:
+    EOL = '\n'
+    eof_sym = 0
+    max_t = 50
+    no_sym = 50
 
-        def __init__(self, *args):
-            self.t = Token()
-            self.pt = Token()
-            self.tokens = Token()
-            self.start = dict()
-            for i in range(48,58):
-                self.start[i] = 2
-            for i in range(65,91):
-                self.start[i] = 5
-            for i in range(97,122):
-                self.start[i] = 5
-            self.start[45], self.start[40], self.start[41],self.start[Buffer.EOF] = 1,53,9,-1
-            self.tval = [None for i in range(128)]
-            self.tlen = int()
-            if args:
-                if type(args[0]) == str:
-                    self.buffer = StringBuffer(s)
-                    self.init()
-                else:
-                    self.buffer = StreamBuffer(s)
-                    self.init()
+    def __init__(self, *args):
+        self.t = Token()
+        self.pt = Token()
+        self.tokens = Token()
+        self.start = dict()
+        for i in range(48,58):
+            self.start[i] = 2
+        for i in range(65,91):
+            self.start[i] = 5
+        for i in range(97,122):
+            self.start[i] = 5
+        self.start[45], self.start[40], self.start[41],self.start[Buffer.EOF] = 1,53,9,-1
+        self.tval = [None for i in range(128)]
+        self.tlen = int()
+        if args:
+            if type(args[0]) == str:
+                self.buffer = StringBuffer(args[0])
+                self.init()
+            elif type(args[0]) == StringBuffer or type(args[0]) == StreamBuffer:
+                self.buffer = args[0]
+                self.init()
 
-        def init(self):
-            self.pos = -1
-            self.line = 1
-            self.col = 0
-            self.old_eols = 0
-            self.nextch()
+    def init(self):
+        self.pos = -1
+        self.line = 1
+        self.col = 0
+        self.old_eols = 0
+        self.next_ch()
 
-            self.pt = Token()
-            self.tokens = Token()
+        self.pt = Token()
+        self.tokens = Token()
 
-        def next_ch(self):
-            if self.old_eols >0:
+    def next_ch(self):
+        if self.old_eols >0:
+            self.ch = Scanner.EOL
+            self.old_eols -= 1
+        else:
+            self.pos = self.buffer.pos
+            self.ch = self.buffer.read()
+            self.col += 1
+            if self.ch == '\r' and self.buffer.Peek() != '\n':
                 self.ch = Scanner.EOL
-                self.old_eols -= 1
-            else:
-                self.pos = self.buffer.pos
-                self.ch = self.buffer.Read()
-                self.col += 1
-                if self.ch == '\r' and self.buffer.Peek() != '\n':
-                    self.ch = Scanner.EOL
-                if self.ch == Scanner.EOL:
-                    self.line+= 1
-                    col = 0
+            if self.ch == Scanner.EOL:
+                self.line+= 1
+                col = 0
 
-        def add_ch(self):
-            if self.tlen >= len(self.tval):
-                new_buf = [None for i in range(2*len(self.tval))]
-                for i in range(len(self.tval)):
-                    new_buf[i] = self.tval[i]
-                    self.tval = new_buf
-            if self.ch != Buffer.EOF:
-                self.tval[self.tlen] = self.ch
-                self.tlen += 1
-                self.next_ch()
+    def add_ch(self):
+        if self.tlen >= len(self.tval):
+            new_buf = [None for i in range(2*len(self.tval))]
+            for i in range(len(self.tval)):
+                new_buf[i] = self.tval[i]
+                self.tval = new_buf
+        if self.ch != Buffer.EOF:
+            self.tval[self.tlen] = self.ch
+            self.tlen += 1
+            self.next_ch()
         
-        def check_literal(self):
-            mapper = {'nan':3,'now':8,'left':12,'right':13,'t':14,'pm':15,'n':17,'rt':18,'a':20,'ax':22, 'ax1':24, 'ax2':25, 'val':27, 'c':29, 'f':30, 'temp':32, 
-            'battery': 33, 'F1L': 35, 'F2L': 36, 'F1R':37, 'F2R':38, 'G1L': 39, 'G2L': 40, 'G1R': 41, 'G2R':42, 'B':43, 'P':44, 'mypos':46, 'L':47, 'self':49}
-            self.t.kind = mapper[self.t.val]
+    def check_literal(self):
+        mapper = {'nan':3,'now':8,'left':12,'right':13,'t':14,'pm':15,'n':17,'rt':18,'a':20,'ax':22, 'ax1':24, 'ax2':25, 'val':27, 'c':29, 'f':30, 'temp':32, 
+        'battery': 33, 'F1L': 35, 'F2L': 36, 'F1R':37, 'F2R':38, 'G1L': 39, 'G2L': 40, 'G1R': 41, 'G2R':42, 'B':43, 'P':44, 'mypos':46, 'L':47, 'self':49}
+        self.t.kind = mapper[self.t.val]
         
-        def next_token(self):
-            while self.ch == ' ':
-                self.next_ch()
-            self.rec_kind = Scanner.no_sym
-            self.rec_end = self.pos
-            self.t = Token()
-            self.t.pos = pos
-            self.t.col = col
-            self.t.line = line
-            if not self.start.get(self.ch, int()):
-                state = 0
-            else:
-                state = self.start[self.ch]
-            self.tlen = 0
-            self.add_ch()
-            kwargs = {self : self, t : self.t,eof_sym : 0, max_t : 50, no_sym : 50}
-            return switch-case.SwitchCase(state).check()
+    def next_token(self):
+        while self.ch == ' ':
+            self.next_ch()
+        self.rec_kind = Scanner.no_sym
+        self.rec_end = self.pos
+        self.t = Token()
+        self.t.pos = self.pos
+        self.t.col = self.col
+        self.t.line = self.line
+        if not self.start.get(self.ch, int()):
+            state = 0
+        else:
+            state = self.start[self.ch]
+        self.tlen = 0
+        self.add_ch()
+        #kwargs = {self : self, t : self.t,eof_sym : 0, max_t : 50, no_sym : 50}
+        return switch_case.SwitchCase(state).check(self)
 
     def set_scanner_behind_t(self):
         self.buffer.pos = self.t.pos
@@ -207,3 +208,23 @@ class StreamBuffer:
     '''
     Token Methods left
     '''
+
+    def scan(self):
+        if self.tokens.next == None:
+            return self.next_token()
+        else:
+            self.tokens = self.tokens.next
+            self.pt = self.tokens
+            return self.tokens
+        
+    def peek(self):
+        while True:
+            if pt.next == None:
+                pt.next = self.next_token()
+            self.pt = pt.next
+            if not pt.kind > self.max_t:
+                break
+        return pt
+
+    def reset_peek(self):
+        self.pt = self.tokens

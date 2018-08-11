@@ -22,7 +22,7 @@ class Log:
     def warn(self,m):
         self.write_console(m, fg.magenta, bg.black)
     
-    def error(self,m,ex):
+    def error(self,m,ex=None):
         self.write_console(m + '\n' + str(ex), fg.white, bg.red)
 
     def write_console(self, m, foreground, background):

@@ -1,6 +1,5 @@
 import sys,math
-
-from Geometry import AngularSpeed
+from TinMan.Geometry import AngularSpeed
 
 
 class HingeControlFunctions:
@@ -10,6 +9,7 @@ class HingeControlFunctions:
             raise(BaseException('hinge'))
         
         def func(h,c,state):
+            print(desired_angle, h.angle)
             angle_diff = desired_angle - h.angle
 
             if angle_diff.abs.degrees < 1:
@@ -18,4 +18,4 @@ class HingeControlFunctions:
 
             return AngularSpeed.AngularSpeed.from_degrees_per_second(speed)
 
-        hinge.set_control_functions(func)
+        hinge.set_control_function(func)

@@ -6,6 +6,7 @@ from TinMan import SimulationContext
 from datetime import timedelta
 import socket
 from TinMan.EffectorCommands import *
+import TinMan.PlayMode as PlayMode
 
 class AgentHost:
     default_tcp_port = 3100
@@ -18,8 +19,8 @@ class AgentHost:
         self._host_name = AgentHost.default_host_name
         self._port_number = AgentHost.default_tcp_port
         self._team_name = 'TinManBots'
-        _context = SimulationContext.SimulationContext(self)
-        self.context = _context
+        self._context = SimulationContext.SimulationContext(self)
+        self.context = self._context
         self.has_run = None
         self._stop_requested = False
         self._desired_uniform_number = None
@@ -83,7 +84,7 @@ class AgentHost:
         if self.has_run != None:
             raise(BaseException('Run can only be called once, and has already been called'))
         
-        AgentHost._log.info('Connecting via TCP to' + self.host_name + ":" + str(self._port_name_setter))
+        AgentHost._log.info('Connecting via TCP to ' + self.host_name + ":" + str(self._port_name_getter()))
 
         try:
             client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -113,44 +114,51 @@ class AgentHost:
             while not self._stop_requested and agent.is_alive:
                 
                 data = NetworkUtil.read_response_string(client, 0.1)
+            
                 
                 if not data or data == None:
                     continue
-
+                
+                
                 parser = Parser.Parser(Scanner.Scanner(Scanner.StringBuffer(data)))
                 parser.parse()
                 perceptor_state = parser.state
-                errors = parser.errorrs
+                errors = parser.errors
             
                 if errors.has_error:
-                    AgentHost._log.error('Parse Error: ' + errors.error_messages + '\nData:' + data)
+                    AgentHost._log.error('Parse Error: ' + Parser.Errors.error_messages() + '\nData:' + data)
 
                 for hinge in agent.body.all_hinges:
                     angle = perceptor_state.try_get_hinge_angle(hinge)
+                
                     if angle != False:
                         hinge.angle = angle
 
-                if perceptor_state.team_side !=  PerceptorState.FieldSide.unkwonn:
+                if perceptor_state.team_side !=  PerceptorState.FieldSide.unknown:
                     self.context.team_side = perceptor_state.team_side
 
-                if perceptor_state.play_mode != PlayMode.PlayMode.unkwonn and perceptor_state.play_mode != self.context.play_mode:
+                if perceptor_state.play_mode != PlayMode.PlayMode.unknown and perceptor_state.play_mode != self.context.play_mode:
                     self.context.play_mode = perceptor_state.play_mode
 
-                if perceptor_state.uniform_number.has_value:
+            
+                if perceptor_state.uniform_number:
                     assert perceptor_state.uniform_number > 0
                     self.context.uniform_number = perceptor_state.uniform_number
 
-                agent.Think(perceptor_state)
+                agent.think(perceptor_state)
 
                 for hinge in agent.body.all_hinges:
                     hinge.compute_control_function(self.context, perceptor_state)
                 
                 self._context.flush_commands(commands)
+                
 
                 commands += [i.get_command() for i in agent.body.all_hinges if i.is_desired_speed_changed]
-                commands.append(synchronise_command())
+                
+                commands.append(SynchroniseCommand())
 
                 AgentHost.send_commands(client, commands)
+                
 
                 commands = []
 
@@ -166,7 +174,7 @@ class AgentHost:
 
     def concat_command_strings(commands):
         sb = ''
-        print(commands)
+        
         for command in commands:
            sb = command.append_s_expression(sb)
         return sb
